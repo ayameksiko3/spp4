@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembersihan Rumah</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <style>
+        /* Custom CSS for logo size */
+        .logo {
+            height: 40px; /* Adjust the height as needed */
+            width: auto; /* Maintain aspect ratio */
+        }
+        .sticky {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .hidden-menu {
+            display: none;
+        }
+        .block-menu {
+            display: block;
+        }
+        #mapid {
+            height: 400px; /* Sesuaikan tinggi peta di sini */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <!-- Navbar -->
+    <nav class="bg-white backdrop-blur-lg shadow-md sticky">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-blue-600 text-lg font-bold">
+                <img src="img/logo.png" alt="Layanan Jasa" class="logo">
+            </a>
+            <div class="hidden md:flex space-x-4">
+                <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Home</a>
+                <a href="index.html#layanan" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Layanan</a>            </div>
+            <button id="menu-btn" class="md:hidden text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden-menu md:hidden bg-white shadow-md">
+            <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Home</a>
+            <a href="index.html#layanan" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Layanan</a>
+        </div>
+    </nav>
+
+    <!-- Pembersihan Rumah Section -->
+    <section id="home-cleaning-form" class="pt-24 pb-16">
+        <div class="container mx-auto px-6">
+            <h1 class="text-4xl font-bold text-center mb-8">Pembersihan Rumah</h1>
+            <form id="cleaning-form" class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
+                <div class="mb-4">
+                    <label for="nama" class="block text-gray-700 font-bold mb-2">Nama:</label>
+                    <input type="text" id="nama" name="nama" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="telepon" class="block text-gray-700 font-bold mb-2">Nomor Telepon:</label>
+                    <input type="text" id="telepon" name="telepon" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div id="mapid" class="mb-4"></div> <!-- Kontainer untuk peta -->
+                <div class="mb-4">
+                    <label for="alamat" class="block text-gray-700 font-bold mb-2">Alamat:</label>
+                    <input type="text" id="alamat" name="alamat" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    <p id="displayed_address" class="mt-2 text-gray-600"></p> <!-- Menampilkan alamat -->
+                </div>
+                <div class="mb-4">
+                    <label for="jadwal" class="block text-gray-700 font-bold mb-2">Jadwal Pembersihan:</label>
+                    <input type="datetime-local" id="jadwal" name="jadwal" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="durasi" class="block text-gray-700 font-bold mb-2">Durasi Pembersihan:</label>
+                    <select id="durasi" name="durasi" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                        <option value="1">1 Jam</option>
+                        <option value="2">2 Jam</option>
+                        <option value="3">3 Jam</option>
+                        <option value="4">4 Jam</option>
+                    </select>
+                    <p id="total-cost" class="mt-2 text-gray-600">Total Biaya: Rp 50000</p> <!-- Menampilkan biaya total -->
+                </div>
+                <div class="mb-4">
+                    <label for="pembayaran" class="block text-gray-700 font-bold mb-2">Metode Pembayaran:</label>
+                    <select id="pembayaran" name="pembayaran" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                        <option value="cod">Cash on Delivery (COD)</option>
+                        <option value="ewallet">E-Wallet</option>
+                    </select>
+                </div>
+                <div id="qris-container" class="hidden mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Scan QRIS untuk pembayaran:</label>
+                    <img src="img/layanan.png" alt="QRIS" class="w-full max-w-xs mx-auto">
+                </div>
+                <div class="text-center">
+                    <a href="https://wa.me/6281218754734?text=Halo%20Pengemudi,%0A%0ASaya%20ingin%20memesan%20layanan%20pembersihan%20rumah.%20Berikut%20adalah%20detail%20pesanan%20saya:%0A%0ANama:%20[obbiy]%0ANomor%20Telepon:%20[62881082476299]%0AAlamat:%20[YourAddress]%0AJadwal:%20[YourSchedule]%0ADurasi:%20[YourDuration]%0A%0A%20Silahkan%20konfirmasi%20pesanan%20saya.%0A%0A%20Terima%20kasih!" 
+                       target="_blank" 
+                       class="bg-blue-600 text-white font-bold py-2 px-4 rounded-full">
+                       Pesan Sekarang
+                    </a>
+                    <button type="button" id="reset-location" class="bg-red-600 text-white font-bold py-2 px-4 rounded-full ml-4">Reset Lokasi</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer" class="bg-white text-gray-800 text-center py-6">
+        <div class="container mx-auto px-6">
+            <p class="text-sm">© 2024 Pelajar Siap Suruh. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS dan Script untuk Inisialisasi Peta -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script>
+        // Inisialisasi peta
+        var map = L.map('mapid').setView([-6.2088, 106.8456], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Menambahkan kontrol untuk menentukan rute
+        L.Routing.control({
+            waypoints: [
+                L.latLng(-6.2088, 106.8456), // Lokasi awal
+                L.latLng(-6.2078, 106.8455)  // Lokasi akhir
+            ],
+            routeWhileDragging: true
+        }).addTo(map);
+
+        // Menampilkan alamat yang diinput pengguna
+        document.getElementById('alamat').addEventListener('input', function() {
+            document.getElementById('displayed_address').textContent = this.value;
+        });
+
+        // Menghitung biaya berdasarkan durasi
+        document.getElementById('durasi').addEventListener('change', function() {
+            var duration = parseInt(this.value);
+            var costPerHour = 50000; // Biaya per jam
+            var totalCost = duration * costPerHour;
+            document.getElementById('total-cost').textContent = 'Total Biaya: Rp ' + totalCost.toLocaleString();
+        });
+
+        // Menampilkan atau menyembunyikan QRIS berdasarkan metode pembayaran
+        document.getElementById('pembayaran').addEventListener('change', function() {
+            var qrisContainer = document.getElementById('qris-container');
+            if (this.value === 'ewallet') {
+                qrisContainer.classList.remove('hidden');
+            } else {
+                qrisContainer.classList.add('hidden');
+            }
+        });
+
+        <!-- Mobile Menu Toggle Script -->
+        document.getElementById('menu-btn').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu.classList.contains('hidden-menu')) {
+                mobileMenu.classList.remove('hidden-menu');
+                mobileMenu.classList.add('block-menu');
+            } else {
+                mobileMenu.classList.add('hidden-menu');
+                mobileMenu.classList.remove('block-menu');
+            }
+        });
+
+        // Reset lokasi pada peta
+        document.getElementById('reset-location').addEventListener('click', function() {
+            map.setView([-6.2088, 106.8456], 13); // Mengatur ulang peta ke posisi awal
+            document.getElementById('alamat').value = '';
+            document.getElementById('displayed_address').textContent = '';
+        });
+    </script>
+</body>
+</html>

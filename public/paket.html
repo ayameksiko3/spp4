@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jemput Kendaraan</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <style>
+        /* Custom CSS for logo size */
+        .logo {
+            height: 40px; /* Adjust the height as needed */
+            width: auto; /* Maintain aspect ratio */
+        }
+        .sticky {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .hidden-menu {
+            display: none;
+        }
+        .block-menu {
+            display: block;
+        }
+        #mapid {
+            height: 400px; /* Sesuaikan tinggi peta di sini */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <!-- Navbar -->
+    <nav class="bg-white backdrop-blur-lg shadow-md sticky">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-blue-600 text-lg font-bold">
+                <img src="img/logo.png" alt="Layanan Jasa" class="logo">
+            </a>
+            <div class="hidden md:flex space-x-4">
+                <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Home</a>
+                <a href="index.html#layanan" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Layanan</a>            </div>
+            <button id="menu-btn" class="md:hidden text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden-menu md:hidden bg-white shadow-md">
+            <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Home</a>
+            <a href="index.html#layanan" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Layanan</a>
+        </div>
+    </nav>
+
+    <!-- Jemput Kendaraan Section -->
+    <section id="jemput-form" class="pt-24 pb-16">
+        <div class="container mx-auto px-6">
+            <h1 class="text-4xl font-bold text-center mb-8">Jemput Kendaraan</h1>
+            <form id="jemput-form" class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
+                <div class="mb-4">
+                    <label for="nama" class="block text-gray-700 font-bold mb-2">Nama:</label>
+                    <input type="t" id="nama" name="nama" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="telepon" class="block text-gray-700 font-bold mb-2">Nomor Telepon:</label>
+                    <input type="text" id="telepon" name="telepon" class="w-full p-2 border border-gray-300 rounded-lg" pattern="\d{10,13}" title="Nomor telepon harus terdiri dari 10 hingga 13 digit angka." required>
+                </div>
+                <div id="mapid" class="mb-4"></div> <!-- Kontainer untuk peta -->
+                <div class="mb-4">
+                    <label for="alamat_jemput" class="block text-gray-700 font-bold mb-2">Alamat Jemput:</label>
+                    <input type="text" id="alamat_jemput" name="alamat_jemput" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    <p id="displayed_address_jemput" class="mt-2 text-gray-600"></p> <!-- Menampilkan alamat -->
+                </div>
+                <div class="mb-4">
+                    <label for="alamat_antar" class="block text-gray-700 font-bold mb-2">Alamat Antar:</label>
+                    <input type="text" id="alamat_antar" name="alamat_antar" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="berat_paket" class="block text-gray-700 font-bold mb-2">Berat Paket (kg):</label>
+                    <input type="number" id="berat_paket" name="berat_paket" class="w-full p-2 border border-gray-300 rounded-lg" min="0" step="0.1" required>
+                    <p id="displayed_address_antar" class="mt-2 text-gray-600"></p> <!-- Menampilkan alamat -->
+                    <div id="distance" class="mt-4 text-gray-700 font-bold text-center"></div> <!-- Menampilkan jarak -->
+                    <div id="total-price" class="mt-4 text-gray-700 font-bold text-center"></div> <!-- Menampilkan total harga -->
+                    <div id="total-price" class="mt-4 text-gray-700 font-bold text-center"></div> <!-- Menampilkan total harga -->
+                </div>
+                <div id="total-price" class="mt-4 text-gray-700 font-bold text-center"></div>
+
+                <div class="mb-4">
+                    <label for="kendaraan" class="block text-gray-700 font-bold mb-2">Jenis Kendaraan:</label>
+                    <select id="kendaraan" name="kendaraan" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                        <option value="motor">Motor</option>
+                        <option value="mobil">Mobil</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="pembayaran" class="block text-gray-700 font-bold mb-2">Metode Pembayaran:</label>
+                    <select id="pembayaran" name="pembayaran" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                        <option value="cod">Cash on Delivery (COD)</option>
+                        <option value="ewallet">E-Wallet</option>
+                    </select>
+                </div>
+                <div id="qris-container" class="hidden mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Scan QRIS untuk pembayaran:</label>
+                    <img src="img/layanan.png" alt="QRIS" class="w-full max-w-xs mx-auto">
+                </div>
+                <div class="text-center">
+                    <a href="#" id="pesan-sekarang" 
+                    class="bg-blue-600 text-white font-bold py-2 px-4 rounded-full cursor-not-allowed opacity-100"
+                    onclick="validateForm(); return false;">
+                    Pesan Sekarang
+                    </a>
+                    <button type="button" id="reset-location" class="bg-red-600 text-white font-bold py-2 px-4 rounded-full ml-4">Reset Lokasi</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer" class="bg-white text-gray-800 text-center py-6">
+        <div class="container mx-auto px-6">
+            <p class="text-sm">© 2024 Pelajar Siap Suruh. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS dan Script untuk Inisialisasi Peta -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script>
+        // Inisialisasi peta
+        var map = L.map('mapid').setView([-6.2088, 106.8456], 13);
+    
+        // Tambahkan peta dari OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+    
+        // Icon untuk marker jemput
+        var jemputIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+    
+        // Icon untuk marker antar
+        var antarIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+    
+        // Variable untuk routingControl dan markers
+        var routingControl;
+        var markerJemput, markerAntar;
+    
+        // Inisialisasi marker jemput
+        map.on('click', function(e) {
+            if (!markerJemput) {
+                markerJemput = L.marker(e.latlng, { icon: jemputIcon }).addTo(map)
+                    .bindPopup('<b>Lokasi Jemput</b>').openPopup();
+    
+                // Ambil alamat dari koordinat yang dipilih
+                getAddress(e.latlng, 'jemput');
+            } else if (!markerAntar) {
+                markerAntar = L.marker(e.latlng, { icon: antarIcon }).addTo(map)
+                    .bindPopup('<b>Lokasi Antar</b>').openPopup();
+    
+                // Ambil alamat dari koordinat yang dipilih
+                getAddress(e.latlng, 'antar');
+    
+                // Tambahkan rute dan hitung jarak
+                if (!routingControl) {
+                    routingControl = L.Routing.control({
+                        waypoints: [
+                            L.latLng(markerJemput.getLatLng()),
+                            L.latLng(e.latlng)
+                        ],
+                        router: L.Routing.osrmv1({
+                            serviceUrl: 'https://router.project-osrm.org/route/v1'
+                        }),
+                        createMarker: function() { return null; } // Menghilangkan marker pada rute
+                    }).addTo(map);
+    
+                    // Tambahkan event listener untuk mendapatkan jarak rute
+                    routingControl.on('routesfound', function(e) {
+                        var route = e.routes[0];
+                        var distance = route.summary.totalDistance / 1000; // Jarak dalam kilometer
+                        document.getElementById('distance').innerText = `Jarak: ${distance.toFixed(2)} km`;
+                        updateTotalPrice(); // Panggil updateTotalPrice setelah jarak diperbarui
+                    });
+                } else {
+                    // Perbarui rute dengan lokasi baru
+                    routingControl.setWaypoints([
+                        L.latLng(markerJemput.getLatLng()),
+                        L.latLng(e.latlng)
+                    ]);
+                }
+            } else {
+                alert('Anda sudah menetapkan lokasi jemput dan antar. Tekan tombol Reset Lokasi untuk mengubahnya.');
+            }
+        });
+    
+        // Menambahkan fungsi untuk menghitung dan menampilkan total harga
+        function updateTotalPrice() {
+            var vehicleType = document.getElementById('kendaraan').value;
+            var distanceElement = document.getElementById('distance').innerText;
+            var weight = parseFloat(document.getElementById('berat_paket').value) || 0;
+            var distance = parseFloat(distanceElement.replace('Jarak: ', '').replace(' km', '')) || 0;
+            
+            var pricePerKm = vehicleType === 'motor' ? 3000 : 5000; // Contoh harga per km
+            var pricePerKg = 3000; // Contoh harga per kg berat paket
+
+            var totalPrice = (distance * pricePerKm) + (weight * pricePerKg);
+            document.getElementById('total-price').innerText = `Total Harga: Rp${totalPrice.toLocaleString()}`;
+        }
+
+        // Update total harga setiap kali jarak atau berat paket diperbarui
+        document.getElementById('distance').addEventListener('DOMSubtreeModified', function() {
+            updateTotalPrice();
+        });
+        document.getElementById('berat_paket').addEventListener('input', function() {
+            updateTotalPrice();
+        });
+
+        // Update total harga saat jenis kendaraan berubah
+        document.getElementById('kendaraan').addEventListener('change', function() {
+            updateTotalPrice();
+        });
+
+    
+        // Fungsi untuk mendapatkan alamat dari koordinat
+        function getAddress(latlng, type) {
+            var geocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}&addressdetails=1`;
+            fetch(geocodeUrl)
+                .then(response => response.json())
+                .then(data => {
+                    var address = data.display_name;
+                    if (type === 'jemput') {
+                        document.getElementById('alamat_jemput').value = address;
+                        document.getElementById('displayed_address_jemput').innerText = address;
+                    } else if (type === 'antar') {
+                        document.getElementById('alamat_antar').value = address;
+                        document.getElementById('displayed_address_antar').innerText = address;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    
+        // Menampilkan QRIS jika E-Wallet dipilih
+        document.getElementById('pembayaran').addEventListener('change', function() {
+            var qrisContainer = document.getElementById('qris-container');
+            if (this.value === 'ewallet') {
+                qrisContainer.classList.remove('hidden');
+            } else {
+                qrisContainer.classList.add('hidden');
+            }
+        });
+    
+        // Mengatur ulang lokasi
+        document.getElementById('reset-location').addEventListener('click', function() {
+            if (markerJemput) {
+                map.removeLayer(markerJemput);
+                markerJemput = null;
+            }
+            if (markerAntar) {
+                map.removeLayer(markerAntar);
+                markerAntar = null;
+            }
+            if (routingControl) {
+                map.removeControl(routingControl);
+                routingControl = null;
+            }
+            document.getElementById('distance').innerText = '';
+            document.getElementById('total-price').innerText = ''; // Hapus harga total saat lokasi direset
+        });
+        
+        document.getElementById('telepon').addEventListener('input', function (e) {
+        // Hanya izinkan angka di input
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+        // Fungsi untuk memeriksa jika semua field terisi
+        function validateForm() {
+            var nama = document.getElementById('nama').value;
+            var telepon = document.getElementById('telepon').value;
+            var alamatJemput = document.getElementById('alamat_jemput').value;
+            var alamatAntar = document.getElementById('alamat_antar').value;
+            var kendaraan = document.getElementById('kendaraan').value;
+            var pembayaran = document.getElementById('pembayaran').value;
+
+            // Validasi nomor telepon
+            var teleponPattern = /^\d{10,13}$/;
+            if (!teleponPattern.test(telepon)) {
+                alert('Nomor telepon harus terdiri dari 10 hingga 13 digit angka.');
+                return;
+            }
+
+            if (nama && telepon && alamatJemput && alamatAntar && kendaraan && pembayaran) {
+                // Semua field sudah diisi, izinkan untuk mengklik link
+                var url = "https://wa.me/6281218754734?text=" + 
+                    "Halo%20Pengemudi,%0A%0A" +
+                    "Saya%20ingin%20memesan%20layanan%20jemput%20kendaraan.%20Berikut%20adalah%20detail%20pesanan%20saya:%0A%0A" +
+                    "Nama:%20" + encodeURIComponent(nama) + "%0A" +
+                    "Nomor%20Telepon:%20" + encodeURIComponent(telepon) + "%0A" +
+                    "Alamat%20Jemput:%20" + encodeURIComponent(alamatJemput) + "%0A" +
+                    "Alamat%20Antar:%20" + encodeURIComponent(alamatAntar) + "%0A" +
+                    "Kendaraan:%20" + encodeURIComponent(kendaraan) + "%0A" +
+                    "Metode%20Pembayaran:%20" + encodeURIComponent(pembayaran) + "%0A%0A" +
+                    "Silahkan%20konfirmasi%20pesanan%20saya.%0A%0A" +
+                    "Terima%20kasih!";
+                window.location.href = url;
+            } else {
+                alert('Mohon lengkapi semua field sebelum melanjutkan.');
+            }
+        }
+
+        <!-- Mobile Menu Toggle Script -->
+        document.getElementById('menu-btn').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu.classList.contains('hidden-menu')) {
+                mobileMenu.classList.remove('hidden-menu');
+                mobileMenu.classList.add('block-menu');
+            } else {
+                mobileMenu.classList.add('hidden-menu');
+                mobileMenu.classList.remove('block-menu');
+            }
+        });
+    </script>
+</body>
+</html>

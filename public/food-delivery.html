@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengiriman Makanan</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <style>
+        /* Custom CSS for logo size */
+        .logo {
+            height: 40px; /* Adjust the height as needed */
+            width: auto; /* Maintain aspect ratio */
+        }
+        #mapid {
+            height: 400px;
+        }
+        .hidden-menu {
+            display: none;
+        }
+        .block-menu {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <!-- Navbar -->
+    <nav class="bg-white backdrop-blur-lg shadow-md sticky">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-blue-600 text-lg font-bold">
+                <img src="img/logo.png" alt="Layanan Jasa" class="logo">
+            </a>
+            <div class="hidden md:flex space-x-4">
+                <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Home</a>
+                <a href="index.html#layanan" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Layanan</a>            </div>
+            <button id="menu-btn" class="md:hidden text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden-menu md:hidden bg-white shadow-md">
+            <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Home</a>
+            <a href="index.html#layanan" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Layanan</a>
+        </div>
+    </nav>
+
+    <!-- Pengiriman Makanan Section -->
+    <section id="food-delivery-form" class="pt-24 pb-16">
+        <div class="container mx-auto px-6">
+            <h1 class="text-4xl font-bold text-center mb-8">Pengiriman Makanan</h1>
+            <form id="delivery-form" class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
+                <div class="mb-4">
+                    <label for="nama" class="block text-gray-700 font-bold mb-2">Nama:</label>
+                    <input type="text" id="nama" name="nama" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="telepon" class="block text-gray-700 font-bold mb-2">Nomor Telepon:</label>
+                    <input type="text" id="telepon" name="telepon" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div id="mapid" class="mb-4"></div> <!-- Kontainer untuk peta -->
+                <div class="mb-4">
+                    <label for="alamat" class="block text-gray-700 font-bold mb-2">Alamat:</label>
+                    <input type="text" id="alamat" name="alamat" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    <p id="displayed_address" class="mt-2 text-gray-600"></p> <!-- Menampilkan alamat -->
+                </div>
+                <div class="mb-4">
+                    <label for="food-description" class="block text-gray-700 font-bold mb-2">Deskripsi Makanan:</label>
+                    <textarea id="food-description" name="food-description" rows="3" class="w-full p-2 border border-gray-300 rounded-lg" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="estimated-price" class="block text-gray-700 font-bold mb-2">Perkiraan Harga:</label>
+                    <input type="number" id="estimated-price" name="estimated-price" class="w-full p-2 border border-gray-300 rounded-lg" required min="1000" value="1000">
+                </div>
+                <div class="mb-4">
+                    <label for="pembayaran" class="block text-gray-700 font-bold mb-2">Metode Pembayaran:</label>
+                    <select id="pembayaran" name="pembayaran" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                        <option value="cod">Cash on Delivery (COD)</option>
+                        <option value="ewallet">E-Wallet</option>
+                    </select>
+                </div>
+                <div id="qris-container" class="hidden mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Scan QRIS untuk pembayaran:</label>
+                    <img src="img/layanan.png" alt="QRIS" class="w-full max-w-xs mx-auto">
+                </div>
+                <div class="text-center">
+                    <a href="https://wa.me/6281218754734?text=Halo%20Pengemudi,%0A%0ASaya%20ingin%20memesan%20makanan.%20Berikut%20adalah%20detail%20pesanan%20saya:%0A%0ANama:%20[obbiy]%0ANomor%20Telepon:%20[62881082476299]%0AAlamat:%20[YourAddress]%0ADeskripsi%20Makanan:%20[YourFoodDescription]%0A%0A%20Silahkan%20konfirmasi%20pesanan%20saya.%0A%0A%20Terima%20kasih!" 
+                       target="_blank" 
+                       class="bg-blue-600 text-white font-bold py-2 px-4 rounded-full">
+                       Pesan Sekarang
+                    </a>
+                </div>
+                <button type="button" id="reset-location" class="mt-4 bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full">
+                    Reset Lokasi
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer" class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; © 2024 Pelajar Siap Suruh. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script>
+        // Inisialisasi peta
+        var map = L.map('mapid').setView([-6.200000, 106.816666], 13); // Koordinat Jakarta
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var markerPenerima;
+        var routingControl;
+
+        var penerimaIcon = L.icon({
+            iconUrl: 'https://unpkg.com/leaflet/dist/images/marker-icon.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowUrl: 'https://unpkg.com/leaflet/dist/images/marker-shadow.png',
+            shadowSize: [41, 41]
+        });
+
+        function updatePenerimaLocation(latlng) {
+            if (markerPenerima) {
+                markerPenerima.setLatLng(latlng);
+                map.setView(latlng, 13);
+            } else {
+                markerPenerima = L.marker(latlng, { icon: penerimaIcon }).addTo(map)
+                    .bindPopup('<b>Lokasi Penerima</b>').openPopup();
+            }
+            getAddress(latlng, 'penerima');
+        }
+
+        function startGeolocationTracking() {
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(function(position) {
+                    var latlng = L.latLng(position.coords.latitude, position.coords.longitude);
+                    updatePenerimaLocation(latlng);
+                }, function(error) {
+                    console.error('Geolocation error: ', error);
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+            } else {
+                alert("Geolocation tidak didukung oleh browser Anda.");
+            }
+        }
+
+        function getAddress(latlng, type) {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}&addressdetails=1`)
+                .then(response => response.json())
+                .then(data => {
+                    var address = data.display_name;
+                    if (type === 'penerima') {
+                        document.getElementById('alamat').value = 'Alamat Penerima: ' + address;
+                        document.getElementById('displayed_address').innerText = 'Alamat Penerima: ' + address;
+                    }
+                });
+        }
+
+        function updateTotalPrice() {
+            var estimatedPrice = parseFloat(document.getElementById('estimated-price').value) || 1000;
+            var distance = document.getElementById('distance').innerText.replace('Jarak: ', '').replace(' km', '');
+            var totalCost = estimatedPrice + (parseFloat(distance) * 5000); // Biaya per kilometer; sesuaikan dengan tarif Anda
+            document.getElementById('total-cost').innerText = 'Total Biaya: Rp ' + totalCost.toFixed(0); // Membulatkan ke angka bulat
+        }
+
+        document.getElementById('estimated-price').addEventListener('input', updateTotalPrice);
+
+        document.getElementById('reset-location').addEventListener('click', function() {
+            if (markerPenerima) {
+                map.removeLayer(markerPenerima);
+                markerPenerima = null;
+            }
+            if (routingControl) {
+                map.removeControl(routingControl);
+                routingControl = null;
+            }
+            document.getElementById('distance').innerText = 'Jarak:';
+            document.getElementById('total-cost').innerText = 'Total Biaya: Rp 1000';
+        });
+
+        startGeolocationTracking(); // Mulai pelacakan lokasi ketika peta dimuat
+
+        <!-- Mobile Menu Toggle Script -->
+        document.getElementById('menu-btn').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu.classList.contains('hidden-menu')) {
+                mobileMenu.classList.remove('hidden-menu');
+                mobileMenu.classList.add('block-menu');
+            } else {
+                mobileMenu.classList.add('hidden-menu');
+                mobileMenu.classList.remove('block-menu');
+            }
+        });
+    </script>
+</body>
+</html>

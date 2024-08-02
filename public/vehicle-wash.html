@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuci Kendaraan</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <style>
+        /* Custom CSS for logo size */
+        .logo {
+            height: 40px; /* Adjust the height as needed */
+            width: auto; /* Maintain aspect ratio */
+        }
+        .sticky {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .hidden-menu {
+            display: none;
+        }
+        .block-menu {
+            display: block;
+        }
+        #mapid {
+            height: 400px; /* Sesuaikan tinggi peta di sini */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <!-- Navbar -->
+    <nav class="bg-white backdrop-blur-lg shadow-md sticky">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-blue-600 text-lg font-bold">
+                <img src="img/logo.png" alt="Layanan Jasa" class="logo">
+            </a>
+            <div class="hidden md:flex space-x-4">
+                <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Home</a>
+                <a href="index.html#layanan" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Layanan</a>            </div>
+            <button id="menu-btn" class="md:hidden text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden-menu md:hidden bg-white shadow-md">
+            <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Home</a>
+            <a href="index.html#layanan" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Layanan</a>
+        </div>
+    </nav>
+
+    <!-- Cuci Kendaraan Section -->
+    <section id="vehicle-wash-form" class="pt-24 pb-16">
+        <div class="container mx-auto px-6">
+            <h1 class="text-4xl font-bold text-center mb-8">Cuci Kendaraan</h1>
+            <form id="wash-form" class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
+                <div class="mb-4">
+                    <label for="nama" class="block text-gray-700 font-bold mb-2">Nama:</label>
+                    <input type="text" id="nama" name="nama" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="telepon" class="block text-gray-700 font-bold mb-2">Nomor Telepon:</label>
+                    <input type="text" id="telepon" name="telepon" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div id="mapid" class="mb-4"></div> <!-- Kontainer untuk peta -->
+                <div class="mb-4">
+                    <label for="alamat" class="block text-gray-700 font-bold mb-2">Alamat:</label>
+                    <input type="text" id="alamat" name="alamat" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    <p id="displayed_address" class="mt-2 text-gray-600"></p> <!-- Menampilkan alamat -->
+                </div>
+                <div class="mb-4">
+                    <label for="jadwal" class="block text-gray-700 font-bold mb-2">Jadwal Pembersihan:</label>
+                    <input type="datetime-local" id="jadwal" name="jadwal" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="jenis-kendaraan" class="block text-gray-700 font-bold mb-2">Jenis Kendaraan:</label>
+                    <select id="jenis-kendaraan" name="jenis-kendaraan" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                        <option value="motor">motor</option>
+                        <option value="mobil">mobil</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <p id="price" class="text-gray-700 font-bold"></p>
+                </div>
+                <div class="mb-4">
+                    <label for="pembayaran" class="block text-gray-700 font-bold mb-2">Metode Pembayaran:</label>
+                    <select id="pembayaran" name="pembayaran" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                        <option value="cod">Cash on Delivery (COD)</option>
+                        <option value="ewallet">E-Wallet</option>
+                    </select>
+                </div>
+                <div id="qris-container" class="hidden mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Scan QRIS untuk pembayaran:</label>
+                    <img src="img/layanan.png" alt="QRIS" class="w-full max-w-xs mx-auto">
+                </div>
+                <div class="text-center">
+                    <div class="text-center">
+                        <a href="#" id="pesan-sekarang" 
+                           class="bg-blue-600 text-white font-bold py-2 px-4 rounded-full cursor-not-allowed opacity-100"
+                           onclick="validateForm(); return false;">
+                           Pesan Sekarang
+                        </a>
+                        <button type="button" id="reset-location" 
+                                class="bg-red-600 text-white font-bold py-2 px-4 rounded-full cursor-not-allowed opacity-100 ml-4"
+                                onclick="resetLocation();">
+                                Reset Lokasi
+                        </button>
+                    </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer" class="bg-white text-gray-800 text-center py-6">
+        <div class="container mx-auto px-6">
+            <p class="text-sm">© 2024 Pelajar Siap Suruh. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS dan Script untuk Inisialisasi Peta -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    <script>
+        // Inisialisasi Peta
+        var map = L.map('mapid').setView([-6.1751, 106.8650], 13); // Koordinat Jakarta
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Inisialisasi Routing Machine
+        var routingControl = L.Routing.control({
+            waypoints: [
+                L.latLng(-6.1751, 106.8650), // Koordinat Jakarta
+                L.latLng(-6.2500, 106.8167)  // Koordinat yang diinginkan
+            ],
+            routeWhileDragging: true
+        }).addTo(map);
+
+        // Mengupdate tampilan alamat berdasarkan koordinat
+        function updateAddress(lat, lng) {
+            var url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('displayed_address').textContent = data.display_name;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Event Listener untuk tombol reset lokasi
+        document.getElementById('reset-location').addEventListener('click', function() {
+            map.setView([-6.1751, 106.8650], 13); // Reset ke Jakarta
+        });
+
+        // Menampilkan QRIS jika metode pembayaran e-wallet dipilih
+        document.getElementById('pembayaran').addEventListener('change', function() {
+            if (this.value === 'ewallet') {
+                document.getElementById('qris-container').classList.remove('hidden');
+            } else {
+                document.getElementById('qris-container').classList.add('hidden');
+            }
+        });
+
+        // Menangani pengiriman form
+        document.getElementById('wash-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert('Pesanan cuci kendaraan Anda telah dikirim!');
+        });
+
+        // Mengupdate harga berdasarkan jenis kendaraan
+        document.getElementById('jenis-kendaraan').addEventListener('change', function() {
+            var priceText = '';
+            switch (this.value) {
+                case 'motor':
+                    priceText = 'Harga untuk Motor: Rp. 30,000';
+                    break;
+                case 'mobil':
+                    priceText = 'Harga untuk Mobil: Rp. 60,000';
+                    break;
+            }
+            document.getElementById('price').textContent = priceText;
+        });
+    </script>
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+        document.getElementById('menu-btn').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu.classList.contains('hidden-menu')) {
+                mobileMenu.classList.remove('hidden-menu');
+                mobileMenu.classList.add('block-menu');
+            } else {
+                mobileMenu.classList.add('hidden-menu');
+                mobileMenu.classList.remove('block-menu');
+            }
+        });
+    </script>
+</body>
+</html>

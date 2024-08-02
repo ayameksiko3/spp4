@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rating dan Ulasan</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+    .sticky {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+    .menu-transition {
+        transition: max-height 0.3s ease-out;
+    }
+    .star-rating {
+        display: flex;
+        direction: row-reverse;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #f0f0f0;
+    }
+    .star-rating input {
+        display: none;
+    }
+    .star-rating label {
+        cursor: pointer;
+        color: #e3e3e3;
+    }
+    .star-rating input:checked ~ label,
+    .star-rating input:checked ~ label ~ label {
+        color: #fcd34d;
+    }
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+        color: #fcd34d;
+    }
+    .hidden {
+        display: none;
+    }
+    .error {
+        color: red;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    .review-card {
+        border: 1px solid #e3e3e3;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 16px;
+    }
+    .review-card .review-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    .review-card .review-header .name {
+        font-weight: bold;
+        font-size: 1.125rem;
+        margin-right: 8px;
+    }
+    .review-card .review-header .stars {
+        display: flex;
+    }
+</style>
+</head>
+<body>
+    <section id="reviews" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-12 text-blue-600">Rating dan Ulasan</h2>
+            <div class="flex justify-center">
+                <form id="review-form" class="bg-white p-8 rounded-lg shadow-lg w-full md:w-1/2">
+                    <div class="mb-6">
+                        <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nama:</label>
+                        <input type="text" id="name" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <p id="name-error" class="error hidden">Nama harus diisi.</p>
+                    </div>
+                    <div class="mb-6">
+                        <label for="rating" class="block text-gray-700 text-sm font-bold mb-2">Rating:</label>
+                        <div class="star-rating">
+                            <input type="radio" id="star5" name="rating" value="5"><label for="star5" title="5 stars">☆</label>
+                            <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars">☆</label>
+                            <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars">☆</label>
+                            <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars">☆</label>
+                            <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star">☆</label>
+                        </div>
+                        <p id="rating-error" class="error hidden">Rating harus dipilih.</p>
+                    </div>
+                    <div class="mb-6">
+                        <label for="review" class="block text-gray-700 text-sm font-bold mb-2">Ulasan:</label>
+                        <textarea id="review" name="review" rows="4" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                        <p id="review-error" class="error hidden">Ulasan harus diisi.</p>
+                    </div>
+                    <div class="flex justify-center">
+                        <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Kirim Ulasan</button>
+                    </div>
+                </form>
+            </div>
+            <div id="submitted-reviews" class="mt-12">
+                <!-- Placeholder for submitted reviews -->
+            </div>
+        </div>
+    </section>
+    </form>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layanan Laundry</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom CSS for logo size */
+        .logo {
+            height: 40px; /* Adjust the height as needed */
+            width: auto; /* Maintain aspect ratio */
+        }
+        .sticky {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .hidden-menu {
+            display: none;
+        }
+        .block-menu {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <!-- Navbar -->
+    <nav class="bg-white backdrop-blur-lg shadow-md sticky">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="text-blue-600 text-lg font-bold">
+                <img src="img/logo.png" alt="Layanan Jasa" class="logo">
+            </a>
+            <div class="hidden md:flex space-x-4">
+                <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Home</a>
+                <a href="index.html#layanan" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Layanan</a>            </div>
+            <button id="menu-btn" class="md:hidden text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden-menu md:hidden bg-white shadow-md">
+            <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Home</a>
+            <a href="index.html#layanan" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">Layanan</a>
+        </div>
+    </nav>
+
+    <!-- Layanan Laundry Section -->
+    <section id="laundry-form" class="pt-24 pb-16">
+        <div class="container mx-auto px-6">
+            <h1 class="text-4xl font-bold text-center mb-8">Layanan Laundry</h1>
+            <form id="laundry-form" class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg" method="POST" action="/send-order">
+                <div class="mb-4">
+                    <label for="nama" class="block text-gray-700 font-bold mb-2">Nama:</label>
+                    <input type="text" id="nama" name="nama" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="telepon" class="block text-gray-700 font-bold mb-2">Nomor Telepon:</label>
+                    <input type="tel" id="telepon" name="telepon" class="w-full p-2 border border-gray-300 rounded-lg" 
+                           pattern="\d{10,13}" title="Nomor telepon harus terdiri dari 10 hingga 13 digit angka." required>
+                </div>                
+                <div class="mb-4">
+                    <label for="alamat" class="block text-gray-700 font-bold mb-2">Alamat:</label>
+                    <input type="text" id="alamat" name="alamat" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                </div>
+                <div class="mb-4">
+                    <label for="jenis_laundry" class="block text-gray-700 font-bold mb-2">Jenis Laundry:</label>
+                    <select id="jenis_laundry" name="jenis_laundry" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                        <option value="cuci_kering">Cuci Kering</option>
+                        <option value="cuci_setrika">Cuci Setrika</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="berat" class="block text-gray-700 font-bold mb-2">Berat (kg):</label>
+                    <input type="number" id="berat" name="berat" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                    <p id="harga" class="text-gray-700 font-bold mt-2">Harga: Rp 0</p>
+                </div>                
+                <div class="mb-4">
+                    <label for="pembayaran" class="block text-gray-700 font-bold mb-2">Metode Pembayaran:</label>
+                    <select id="pembayaran" name="pembayaran" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                        <option value="cod">Cash on Delivery (COD)</option>
+                        <option value="ewallet">E-Wallet</option>
+                    </select>
+                </div>
+                <div id="qris-container" class="hidden mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Scan QRIS untuk pembayaran:</label>
+                    <img src="img/layanan.png" alt="QRIS" class="w-full max-w-xs mx-auto">
+                </div>
+                <div class="text-center">
+                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-full">
+                        Pesan Sekarang
+                    </button>
+                </div>                
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer" class="bg-white text-gray-800 text-center py-6">
+        <div class="container mx-auto px-6">
+            <p class="text-sm">© 2023 Pelajar Siap Suruh. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('berat').addEventListener('input', function() {
+    var berat = parseFloat(this.value) || 0; // Mengambil nilai berat dan konversi ke float
+    var hargaPerKg = 8000; // Harga per kilogram
+    var totalHarga = berat * hargaPerKg;
+
+    // Menampilkan harga
+    document.getElementById('harga').textContent = 'Harga: Rp ' + totalHarga.toLocaleString();
+    });
+
+    document.getElementById('pembayaran').addEventListener('change', function() {
+        var qrisContainer = document.getElementById('qris-container');
+        if (this.value === 'ewallet') {
+            qrisContainer.classList.remove('hidden');
+        } else {
+            qrisContainer.classList.add('hidden');
+        }
+    });
+
+    // Validasi form dan redirect ke WhatsApp
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Menghentikan form dari pengiriman otomatis
+
+        var nama = document.getElementById('nama').value;
+        var telepon = document.getElementById('telepon').value;
+        var alamat = document.getElementById('alamat').value;
+        var jenisLaundry = document.getElementById('jenis_laundry').value;
+        var berat = document.getElementById('berat').value;
+        var pembayaran = document.getElementById('pembayaran').value;
+
+        // Validasi nomor telepon
+        var teleponPattern = /^\d{10,13}$/;
+        if (!teleponPattern.test(telepon)) {
+            alert('Nomor telepon harus terdiri dari 10 hingga 13 digit angka.');
+            return;
+        }
+
+        if (nama && telepon && alamat && jenisLaundry && berat && pembayaran) {
+            // Semua field sudah diisi, izinkan untuk mengklik link
+            var url = "https://wa.me/6281218754734?text=" + 
+                "Halo%20Pengemudi,%0A%0A" +
+                "Saya%20ingin%20memesan%20layanan%20laundry.%20Berikut%20adalah%20detail%20pesanan%20saya:%0A%0A" +
+                "Nama:%20" + encodeURIComponent(nama) + "%0A" +
+                "Nomor%20Telepon:%20" + encodeURIComponent(telepon) + "%0A" +
+                "Alamat:%20" + encodeURIComponent(alamat) + "%0A" +
+                "Jenis%20Laundry:%20" + encodeURIComponent(jenisLaundry) + "%0A" +
+                "Berat:%20" + encodeURIComponent(berat) + "%0A" +
+                "Metode%20Pembayaran:%20" + encodeURIComponent(pembayaran) + "%0A%0A" +
+                "Silahkan%20konfirmasi%20pesanan%20saya.%0A%0A" +
+                "Terima%20kasih!";
+            window.location.href = url;
+        } else {
+            alert('Mohon lengkapi semua field sebelum melanjutkan.');
+        }
+    });
+
+    <!-- Mobile Menu Toggle Script -->
+        document.getElementById('menu-btn').addEventListener('click', function() {
+            var mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu.classList.contains('hidden-menu')) {
+                mobileMenu.classList.remove('hidden-menu');
+                mobileMenu.classList.add('block-menu');
+            } else {
+                mobileMenu.classList.add('hidden-menu');
+                mobileMenu.classList.remove('block-menu');
+            }
+        });
+    </script>
+</body>
+</html>

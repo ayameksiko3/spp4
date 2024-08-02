@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layanan Jasa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="path/to/magic.css">
+    <style>
+        /* Custom CSS for logo size */
+        .logo {
+            height: 40px; /* Adjust the height as needed */
+            width: auto; /* Maintain aspect ratio */
+        }
+        @keyframes typing {
+        from { width: 0; }
+        to { width: 100%; }
+        }
+
+        .typing-animation {
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 3px solid #000; /* Cursor effect */
+            animation: typing 4s steps(40, end) 1s 1 normal both;
+        }
+
+        .cursor-blink {
+            animation: blink 0.75s step-start infinite;
+        }
+
+        @keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: black; }
+        }
+
+        .marquee-wrapper {
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        }
+        .marquee {
+        display: flex;
+        gap: 1rem;
+        animation: marquee 20s linear infinite;
+        }
+        .marquee.reverse {
+        animation: marquee-reverse 20s linear infinite;
+        }
+        @keyframes marquee {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+        }
+        @keyframes marquee-reverse {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+        }
+        .testimonial-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e5e7eb;
+        transition: transform 0.3s, box-shadow 0.3s;
+        width: 300px;
+        }
+        .testimonial-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+        .testimonial-img {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e5e7eb;
+        }
+        .testimonial-text {
+        color: #4b5563;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="text-blue-600 text-lg font-bold">
+                <img src="img/logo.png" alt="Layanan Jasa" class="logo">
+            </a>
+            <div class="hidden md:flex space-x-4">
+                <a href="#services" class="text-gray-800 hover:text-blue-600">Layanan</a>
+                <a href="#about" class="text-gray-800 hover:text-blue-600">Tentang Kami</a>
+                <a href="#contact" class="text-gray-800 hover:text-blue-600">Kontak</a>
+            </div>
+            <div class="md:hidden flex items-center">
+                <button id="menu-btn" class="text-gray-800 focus:outline-none">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden max-h-0 overflow-hidden transition-all duration-300">
+            <a href="#services" class="block px-4 py-2 text-gray-800 hover:bg-blue-600 hover:text-white">Layanan</a>
+            <a href="#about" class="block px-4 py-2 text-gray-800 hover:bg-blue-600 hover:text-white">Tentang Kami</a>
+            <a href="#contact" class="block px-4 py-2 text-gray-800 hover:bg-blue-600 hover:text-white">Kontak</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="hero" class="bg-blue-600 text-white">
+        <div class="container mx-auto px-6 py-24 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-8 md:mb-0 text-center md:text-left">
+                <h1 class="text-5xl font-bold">PELAJAR SIAP SURUH</h1>
+                <p class="mt-4 text-lg">Kami menawarkan layanan antar jemput kendaraan, laundry, pembersihan rumah, cuci kendaraan, pengantaran makanan, dan pengantaran paket. Dengan keahlian profesional, kami siap membantu memenuhi kebutuhan Anda!</p>
+                <a href="#services" class="mt-8 inline-block bg-white text-blue-600 font-bold py-2 px-4 rounded-full">Lihat Layanan</a>
+            </div>
+            <div class="md:w-1/2">
+                <img src="img/layanan.png" alt="Layanan Jasa">
+            </div>
+        </div>
+    </header>
+
+    <!-- Services Section -->
+    <section id="services" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-12 text-blue-600">Layanan Kami</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service 1 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow transform hover:scale-105">
+                    <div class="flex items-center justify-center mb-4">
+                        <img src="img/pickup-icon.png" alt="Penjemputan Kendaraan" class="w-24 h-24">
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-blue-600">Pickup&drop</h3>
+                    <p class="text-gray-600 text-center mt-2">Layanan penjemputan dan pengantaran menggunakan kendaraan dengan aman dan cepat.</p>
+                    <a href="pickup.html" class="mt-4 inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Order Now</a>
+                </div>
+                <!-- Service 2 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow transform hover:scale-105">
+                    <div class="flex items-center justify-center mb-4">
+                        <img src="img/loundry.png" alt="Laundry" class="w-24 h-24">
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-blue-600">Laundry</h3>
+                    <p class="text-gray-600 text-center mt-2">Layanan laundry cepat, bersih, dan rapi untuk kebutuhan Anda.</p>
+                    <a href="laundry.html" class="mt-4 inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Order Now</a>
+                </div>
+                <!-- Service 3 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow transform hover:scale-105">
+                    <div class="flex items-center justify-center mb-4">
+                        <img src="img/cleaning-icon.png" alt="Pembersihan Rumah" class="w-24 h-24">
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-blue-600">House Cleaning</h3>
+                    <p class="text-gray-600 text-center mt-2">Jasa pembersihan rumah profesional dan terpercaya.</p>
+                    <a href="home-cleaning.html" class="mt-4 inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Order Now</a>
+                </div>
+                <!-- Service 4 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow transform hover:scale-105">
+                    <div class="flex items-center justify-center mb-4">
+                        <img src="img/cuci-kendaraan.png" alt="Pencucian Kendaraan" class="w-24 h-24">
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-blue-600">Motor and Car Wash</h3>
+                    <p class="text-gray-600 text-center mt-2">Nikmati layanan cuci kendaraan terbaik kami.</p>
+                    <a href="vehicle-wash.html" class="mt-4 inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Order Now</a>
+                </div>
+                <!-- Service 5 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow transform hover:scale-105">
+                    <div class="flex items-center justify-center mb-4">
+                        <img src="img/food.png" alt="Pengantaran Makanan" class="w-24 h-24">
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-blue-600">Food Delivery</h3>
+                    <p class="text-gray-600 text-center mt-2">Pesan makanan favorit Anda dan kami akan mengantarnya dengan cepat.</p>
+                    <a href="food-delivery.html" class="mt-4 inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Order Now</a>
+                </div>
+                <!-- Service 6 -->
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow transform hover:scale-105">
+                    <div class="flex items-center justify-center mb-4">
+                        <img src="img/paket.png" alt="Pengantaran Paket" class="w-24 h-24">
+                    </div>
+                    <h3 class="text-xl font-semibold text-center text-blue-600">Package Delivery</h3>
+                    <p class="text-gray-600 text-center mt-2">Layanan antar paket cepat dan aman untuk kebutuhan Anda.</p>
+                    <a href="paket.html" class="mt-4 inline-block bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Order Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Section -->
+    <section id="about" class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-12 text-blue-600">Tentang Kami</h2>
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0">
+                    <img src="img/kami.png" alt="Tentang Kami" class="w-full h-auto">
+                </div>
+                <div class="md:w-1/2 md:pl-12">
+                    <p class="text-gray-600 leading-loose">Kami sedang mengerjakan proyek P5 yang berfokus pada pengembangan situs web layanan jasa yang komprehensif. Proyek ini bertujuan untuk menciptakan platform yang ramah pengguna yang menyediakan berbagai layanan, termasuk penjemputan dan pengantaran, laundry, pembersihan rumah, cuci motor dan mobil, pengantaran makanan, dan pengantaran paket. Tujuan kami adalah merancang situs web yang memenuhi kebutuhan pengguna dengan jelas dan efisien.dan kami juga bertujuan untuk menyelesaikan projek P5</p>
+                    <p class="text-gray-600 leading-loose mt-4">Kami selalu mengutamakan kepuasan pelanggan dan berusaha untuk memberikan pengalaman layanan yang nyaman dan memuaskan. Terima kasih telah mempercayakan kebutuhan jasa Anda kepada kami.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-gray-100 py-8">
+        <div class="container mx-auto px-4">
+            <header>
+                <h2 class="text-3xl font-bold text-center mb-6">FAQs</h2>
+            </header>
+            <div class="space-y-4">
+                <div class="bg-white shadow-md rounded-lg p-4">
+                    <h3 class="text-xl font-semibold cursor-pointer flex justify-between items-center" onclick="toggleAnswer(this)">
+                        Apa layanan yang kalian tawarkan?
+                        <svg class="w-5 h-5 transition-transform transform rotate-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 9.293a1 1 0 011.414 0L10 12.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </h3>
+                    <p class="mt-2 text-gray-600 hidden transition-opacity duration-300 ease-in-out">Kami menawarkan berbagai layanan termasuk penjemputan dan pengantaran motor dan mobil, laundry, pembersihan rumah, pencucian motor dan mobil, pengiriman makanan, dan pengiriman paket.</p>
+                </div>
+                <div class="bg-white shadow-md rounded-lg p-4">
+                    <h3 class="text-xl font-semibold cursor-pointer flex justify-between items-center" onclick="toggleAnswer(this)">
+                        Bagaimana cara memesan layanan?
+                        <svg class="w-5 h-5 transition-transform transform rotate-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 9.293a1 1 0 011.414 0L10 12.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </h3>
+                    <p class="mt-2 text-gray-600 hidden transition-opacity duration-300 ease-in-out">Anda dapat memesan layanan melalui website kami dengan memilih layanan yang diinginkan dan mengisi detail yang diperlukan. Kami juga menyediakan opsi pembayaran online yang aman.</p>
+                </div>
+                <div class="bg-white shadow-md rounded-lg p-4">
+                    <h3 class="text-xl font-semibold cursor-pointer flex justify-between items-center" onclick="toggleAnswer(this)">
+                        Apakah saya bisa menjadwalkan layanan?
+                        <svg class="w-5 h-5 transition-transform transform rotate-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 9.293a1 1 0 011.414 0L10 12.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </h3>
+                    <p class="mt-2 text-gray-600 hidden transition-opacity duration-300 ease-in-out">Ya, Anda bisa menjadwalkan layanan sesuai kebutuhan Anda. Kami fleksibel dalam mengatur waktu sesuai kenyamanan Anda.</p>
+                </div>
+                <div class="bg-white shadow-md rounded-lg p-4">
+                    <h3 class="text-xl font-semibold cursor-pointer flex justify-between items-center" onclick="toggleAnswer(this)">
+                        Bagaimana cara pembayaran layanan?
+                        <svg class="w-5 h-5 transition-transform transform rotate-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 9.293a1 1 0 011.414 0L10 12.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </h3>
+                    <p class="mt-2 text-gray-600 hidden transition-opacity duration-300 ease-in-out">Kami menerima pembayaran melalui berbagai metode, termasuk transfer bank, kartu kredit, dan e-wallet. Detail lebih lanjut akan diberikan saat proses pemesanan.</p>
+                </div>
+                <div class="bg-white shadow-md rounded-lg p-4">
+                    <h3 class="text-xl font-semibold cursor-pointer flex justify-between items-center" onclick="toggleAnswer(this)">
+                        Apakah ada jaminan kepuasan?
+                        <svg class="w-5 h-5 transition-transform transform rotate-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 9.293a1 1 0 011.414 0L10 12.586l3.293-3.293a1 1 0 011.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </h3>
+                    <p class="mt-2 text-gray-600 hidden transition-opacity duration-300 ease-in-out">Kami berkomitmen untuk memberikan layanan terbaik kepada pelanggan kami. Jika Anda tidak puas dengan layanan yang diberikan, silakan hubungi kami dan kami akan berusaha menyelesaikan masalah Anda secepat mungkin.</p>
+                </div>
+            </div>
+        </div>
+    </section>    
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center mb-12 text-blue-600">Kontak Kami</h2>
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0">
+                    <form action="send_email.php" method="post" class="bg-white p-8 rounded-lg shadow-lg w-full">
+                        <div class="mb-4">
+                            <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Nama:</label>
+                            <input type="text" id="name" name="name" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-600">
+                        </div>
+                        <div class="mb-4">
+                            <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                            <input type="email" id="email" name="email" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-600">
+                        </div>
+                        <div class="mb-4">
+                            <label for="message" class="block text-gray-700 text-sm font-bold mb-2">Pesan:</label>
+                            <textarea id="message" name="message" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-600"></textarea>
+                        </div>
+                        <div>
+                            <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Kirim Pesan</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="md:w-1/2 md:pl-12">
+                    <p class="text-gray-600 leading-loose">Jika Anda memiliki pertanyaan atau membutuhkan informasi lebih lanjut, jangan ragu untuk menghubungi kami. Tim kami siap membantu Anda.</p>
+                    <p class="text-gray-600 leading-loose mt-4">Email: mohrhobbil@gmaill.com</p>
+                    <p class="text-gray-600 leading-loose mt-4">Telepon: +62881082476299</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white py-6">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-between items-center">
+                <p class="text-gray-600">&copy; 2024 Pelajar Siap Suruh. All rights reserved.</p>
+                <div class="flex space-x-4">
+                    <a href="https://www.tiktok.com/@pelajarsiapsuruh" class="text-gray-600 hover:text-blue-600"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.instagram.com/pelajar.siapsuruh_/" class="text-gray-600 hover:text-blue-600"><i class="fab fa-instagram"></i></a>                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle mobile menu
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('max-h-0');
+            mobileMenu.classList.toggle('max-h-screen');
+        });
+
+        function toggleAnswer(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('svg');
+        
+            answer.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+    </script>
+</body>
+</html>
